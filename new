@@ -1,0 +1,205 @@
+Step 1: Create the Book Class
+Create a new class library project and add the following Book class:
+
+csharp
+Copy code
+using System;
+
+namespace BookManagementSystem
+{
+    public class Book
+    {
+        public int BookID { get; set; }
+        public string BookName { get; set; }
+        public string ISBN { get; set; }
+        public decimal Price { get; set; }
+        public string Publisher { get; set; }
+        public int NumberOfPages { get; set; }
+        public string Language { get; set; }
+        public string LoT { get; set; }
+        public string Summary { get; set; }
+
+        public Book(int bookID, string bookName, string isbn, decimal price, string publisher, int numberOfPages, string language = "English", string loT = "Technical", string summary = "")
+        {
+            if (bookID.ToString().Length != 5) throw new ArgumentException("Book ID should have 5 digits only.");
+            if (string.IsNullOrWhiteSpace(bookName)) throw new ArgumentException("Book Name cannot be blank.");
+            
+            BookID = bookID;
+            BookName = bookName;
+            ISBN = isbn;
+            Price = price;
+            Publisher = publisher;
+            NumberOfPages = numberOfPages;
+            Language = language;
+            LoT = loT;
+            Summary = summary;
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {BookID}, Name: {BookName}, ISBN: {ISBN}, Price: {Price:C}, Publisher: {Publisher}, Pages: {NumberOfPages}, Language: {Language}, LoT: {LoT}, Summary: {Summary}";
+        }
+    }
+}
+Step 2: Create a Class Library for Book Management
+Add another class in the same library to manage book operations:
+
+csharp
+Copy code
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BookManagementSystem
+{
+    public class BookManager
+    {
+        private List<Book> books = new List<Book>();
+        private readonly List<string> validLoT = new List<string> { ".NET", "Java", "IMS", "V&V", "BI", "RDBMS" };
+
+        public void AddBook(Book book)
+        {
+            if (!validLoT.Contains(book.LoT)) throw new ArgumentException("Invalid LoT value.");
+            books.Add(book);
+        }
+
+        public void DisplayBooks()
+        {
+            if (books.Count == 0)
+            {
+                Console.WriteLine("No books available.");
+                return;
+            }
+
+            foreach (var book in books)
+            {
+                Console.WriteLine(book);
+            }
+        }
+
+        public void DeleteBook(int bookID)
+        {
+            var book = books.FirstOrDefault(b => b.BookID == bookID);
+            if (book != null)
+            {
+                books.Remove(book);
+                Console.WriteLine("Book removed successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Book not found.");
+            }
+        }
+    }
+}
+Step 3: Create the Console Application
+Create a console application project and use the Book and BookManager classes:
+
+csharp
+Copy code
+using System;
+using BookManagementSystem;
+
+namespace BookManagementConsoleApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            BookManager manager = new BookManager();
+            while (true)
+            {
+                Console.WriteLine("Book Management System");
+                Console.WriteLine("1. Add Book");
+                Console.WriteLine("2. Display Books");
+                Console.WriteLine("3. Delete Book");
+                Console.WriteLine("4. Exit");
+                Console.Write("Enter your choice: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        AddBook(manager);
+                        break;
+                    case "2":
+                        manager.DisplayBooks();
+                        break;
+                    case "3":
+                        DeleteBook(manager);
+                        break;
+                    case "4":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        static void AddBook(BookManager manager)
+        {
+            try
+            {
+                Console.Write("Enter Book ID (5 digits): ");
+                int bookID = int.Parse(Console.ReadLine());
+                Console.Write("Enter Book Name: ");
+                string bookName = Console.ReadLine();
+                Console.Write("Enter ISBN: ");
+                string isbn = Console.ReadLine();
+                Console.Write("Enter Price: ");
+                decimal price = decimal.Parse(Console.ReadLine());
+                Console.Write("Enter Publisher: ");
+                string publisher = Console.ReadLine();
+                Console.Write("Enter Number of Pages: ");
+                int numberOfPages = int.Parse(Console.ReadLine());
+                Console.Write("Enter Language (optional, default 'English'): ");
+                string language = Console.ReadLine();
+                language = string.IsNullOrWhiteSpace(language) ? "English" : language;
+                Console.Write("Enter LoT (optional, default 'Technical'): ");
+                string loT = Console.ReadLine();
+                loT = string.IsNullOrWhiteSpace(loT) ? "Technical" : loT;
+                Console.Write("Enter Summary (optional): ");
+                string summary = Console.ReadLine();
+
+                Book book = new Book(bookID, bookName, isbn, price, publisher, numberOfPages, language, loT, summary);
+                manager.AddBook(book);
+                Console.WriteLine("Book added successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        static void DeleteBook(BookManager manager)
+        {
+            try
+            {
+                Console.Write("Enter Book ID to delete: ");
+                int bookID = int.Parse(Console.ReadLine());
+                manager.DeleteBook(bookID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+}
+This implementation includes:
+
+Validation of required fields and optional values.
+A method for adding books with default values for Language and LoT.
+Menu-based console application for adding, displaying, and deleting books.
+You can further improve and expand this implementation based on additional requirements and features.
+
+
+
+
+
+
+
+
+
+
