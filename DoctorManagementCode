@@ -1,0 +1,206 @@
+Create a Doctor Management system which will be used for maintaining the doctor’s details. 
+This system can be distributed to the customers/consumers. 
+This information helps patients to find appropriate doctor based on their ailment(s).
+        
+Create a menu driven console application to 
+
+1.Accept Doctor Information from user and insert the data.
+2.Registration No
+3.Doctor Name
+4.City
+5.Area of Specialization (E.g. - Heart Specialist, Ophthalmologist etc.)
+6.Clinic Address
+7.Clinic Timings
+8.Contact No
+
+
+Validations
+All fields are mandatory.
+Registration No should accept only numbers and should be of 7 digits only.
+Doctor Name and Area of Specialization should accept only alphabets.
+Clinic Timings should accept number and alphabets and special character
+Contact No should accept only numbers and should be of 10 digits only
+
+Note: The code must use OOP concepts and modularity
+
+====================================================
+
+Here's a basic implementation of a Doctor Management System in C# console application, incorporating OOP concepts and modularity:
+
+csharp
+Copy code
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace DoctorManagementSystem
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            List<Doctor> doctors = new List<Doctor>();
+            int choice;
+
+            do
+            {
+                Console.WriteLine("\nDoctor Management System");
+                Console.WriteLine("1. Add Doctor Information");
+                Console.WriteLine("2. Display All Doctors");
+                Console.WriteLine("3. Search Doctor by Registration No");
+                Console.WriteLine("4. Exit");
+                Console.Write("Enter your choice: ");
+                choice = int.Parse(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        AddDoctor(doctors);
+                        break;
+                    case 2:
+                        DisplayDoctors(doctors);
+                        break;
+                    case 3:
+                        SearchDoctor(doctors);
+                        break;
+                    case 4:
+                        Console.WriteLine("Exiting...");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice, please try again.");
+                        break;
+                }
+            } while (choice != 4);
+        }
+
+        static void AddDoctor(List<Doctor> doctors)
+        {
+            Doctor doctor = new Doctor();
+
+            doctor.RegistrationNo = GetValidInput("Enter Registration No (7 digits): ", InputType.RegistrationNo);
+            doctor.DoctorName = GetValidInput("Enter Doctor Name: ", InputType.AlphabetOnly);
+            doctor.City = GetValidInput("Enter City: ", InputType.AlphabetOnly);
+            doctor.AreaOfSpecialization = GetValidInput("Enter Area of Specialization: ", InputType.AlphabetOnly);
+            doctor.ClinicAddress = GetValidInput("Enter Clinic Address: ", InputType.Alphanumeric);
+            doctor.ClinicTimings = GetValidInput("Enter Clinic Timings: ", InputType.AlphanumericWithSpecialChars);
+            doctor.ContactNo = GetValidInput("Enter Contact No (10 digits): ", InputType.ContactNo);
+
+            doctors.Add(doctor);
+
+            Console.WriteLine("Doctor information added successfully!");
+        }
+
+        static void DisplayDoctors(List<Doctor> doctors)
+        {
+            if (doctors.Count == 0)
+            {
+                Console.WriteLine("No doctors available.");
+                return;
+            }
+
+            Console.WriteLine("\nDoctor Details:");
+            foreach (var doctor in doctors)
+            {
+                Console.WriteLine(doctor);
+            }
+        }
+
+        static void SearchDoctor(List<Doctor> doctors)
+        {
+            string regNo = GetValidInput("Enter Registration No to search: ", InputType.RegistrationNo);
+
+            var doctor = doctors.FirstOrDefault(d => d.RegistrationNo == regNo);
+
+            if (doctor != null)
+            {
+                Console.WriteLine("Doctor found:");
+                Console.WriteLine(doctor);
+            }
+            else
+            {
+                Console.WriteLine("Doctor not found with Registration No: " + regNo);
+            }
+        }
+
+        static string GetValidInput(string prompt, InputType type)
+        {
+            string input;
+            bool isValid;
+
+            do
+            {
+                Console.Write(prompt);
+                input = Console.ReadLine();
+                isValid = ValidateInput(input, type);
+
+                if (!isValid)
+                {
+                    Console.WriteLine("Invalid input, please try again.");
+                }
+            } while (!isValid);
+
+            return input;
+        }
+
+        static bool ValidateInput(string input, InputType type)
+        {
+            switch (type)
+            {
+                case InputType.RegistrationNo:
+                    return input.All(char.IsDigit) && input.Length == 7;
+                case InputType.AlphabetOnly:
+                    return input.All(char.IsLetter);
+                case InputType.Alphanumeric:
+                    return input.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c));
+                case InputType.AlphanumericWithSpecialChars:
+                    return input.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || char.IsPunctuation(c));
+                case InputType.ContactNo:
+                    return input.All(char.IsDigit) && input.Length == 10;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    enum InputType
+    {
+        RegistrationNo,
+        AlphabetOnly,
+        Alphanumeric,
+        AlphanumericWithSpecialChars,
+        ContactNo
+    }
+
+    class Doctor
+    {
+        public string RegistrationNo { get; set; }
+        public string DoctorName { get; set; }
+        public string City { get; set; }
+        public string AreaOfSpecialization { get; set; }
+        public string ClinicAddress { get; set; }
+        public string ClinicTimings { get; set; }
+        public string ContactNo { get; set; }
+
+        public override string ToString()
+        {
+            return $"Registration No: {RegistrationNo}\nDoctor Name: {DoctorName}\nCity: {City}\n" +
+                   $"Area of Specialization: {AreaOfSpecialization}\nClinic Address: {ClinicAddress}\n" +
+                   $"Clinic Timings: {ClinicTimings}\nContact No: {ContactNo}\n";
+        }
+    }
+}
+Explanation:
+OOP Concepts:
+
+Class Doctor: This represents the data structure for a doctor, encapsulating the details like RegistrationNo, DoctorName, City, AreaOfSpecialization, ClinicAddress, ClinicTimings, and ContactNo.
+Methods: Different methods handle the functionalities (e.g., AddDoctor, DisplayDoctors, SearchDoctor).
+Modularity:
+
+The code is split into multiple methods, each handling a specific task, ensuring the code is modular and easier to maintain.
+Validations:
+
+The ValidateInput method ensures that user inputs conform to the required formats (e.g., only digits for RegistrationNo, only alphabets for DoctorName).
+Menu-Driven Console Application:
+
+The Main method provides a menu for users to add, display, and search for doctor information.
+This implementation can be further enhanced with features like editing and deleting doctor information, but this should provide a solid foundation to build upon.
